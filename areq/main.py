@@ -2,16 +2,33 @@ import aiohttp
 import asyncio
 
 
-async def main():
+class RequestSender:
+    ENDPOINT = "/"
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get('http://www.google.com') as response:
+    async def get(self):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(self.ENDPOINT) as response:
+                print(await response.json())
+                return response
 
-            print("Status:", response.status)
-            print("Content-type:", response.headers['content-type'])
 
-            html = await response.text()
-            print("Body:", html[:15], "...")
+class HttpBinHeaders(RequestSender):
+    ENDPOINT = "/headers"
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+
+class RequestManager:
+    BASE_URL = "https://httpbin.org"
+    SESSION = None
+
+    headers = HttpBinHeaders()
+
+    async def initialize_manager(self):
+        self.SESSION = aiohttp.ClientSession()
+
+
+manager = RequestManager()
+await manager.initialize_manager()
+
+
+# loop = asyncio.get_event_loop()
+# loop.run_until_complete(HttpBinHeaders().get())

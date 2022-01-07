@@ -6,6 +6,7 @@ class RequestSender:
     ENDPOINT = "/"
 
     async def get(self):
+        # TODO Temporary solution - need to move session to manager
         async with aiohttp.ClientSession() as session:
             async with session.get(self.ENDPOINT) as response:
                 print(await response.json())
@@ -13,22 +14,18 @@ class RequestSender:
 
 
 class HttpBinHeaders(RequestSender):
-    ENDPOINT = "/headers"
+    ENDPOINT = "https://httpbin.org/headers"
+    # ENDPOINT = "/headers"
 
 
 class RequestManager:
     BASE_URL = "https://httpbin.org"
-    SESSION = None
 
     headers = HttpBinHeaders()
 
-    async def initialize_manager(self):
-        self.SESSION = aiohttp.ClientSession()
-
 
 manager = RequestManager()
-await manager.initialize_manager()
 
 
-# loop = asyncio.get_event_loop()
-# loop.run_until_complete(HttpBinHeaders().get())
+loop = asyncio.get_event_loop()
+loop.run_until_complete(manager.headers.get())
